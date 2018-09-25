@@ -3,3 +3,10 @@ This project is aimed to identify genetic changes that led to antibiotic restanc
 1. Created folder Data:
     Downloaded reference genome and annotation file;
     Downloaded Illumina sequences of a resistant strain;
+
+2. Manual inspection of sequencing files:
+    Fasta files match the required format;
+    Word counts: 
+	1823504 amp_res_1.fastq
+	1823504 amp_res_2.fastq
+    Number of reads = 455876 (number of lines divided by 4 lines per pead);
