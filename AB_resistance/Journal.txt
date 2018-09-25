@@ -1,4 +1,4 @@
-This project is aimed to identify genetic changes led to antibiotic restance in a given E.Coli strain.
+This project is aimed to identify genetic changes that led to antibiotic restance in a given E.Coli strain.
 
 1. Created folder Data:
     Downloaded reference genome and annotation file;
