@@ -20,3 +20,11 @@ Below is the decription of the workflow:
     Red circles (abnormalities):
 	Per base sequence quality (both amp_res_1 and amp_res_2 files), very high variance in quality at ends of reads;
 	Per tile sequence quality (only amp_res_1 file);
+    Differences between amp_res_1 and amp_res_2 files:
+	Per tile sequence quality (abnormal in amp_res_1 and slightly abnormal in amp_res_2);
+	Non-significant spike at 6th base in N-content of reads in amp_res_1 file;
+    Increased GC-content of the genome;
+
+4. Filtering the reads with Trimmomatic:
+    Choose Sanger-encoding "phred33";
+
