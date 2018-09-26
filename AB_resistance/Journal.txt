@@ -1,12 +1,22 @@
 This project is aimed to identify genetic changes that led to antibiotic resistance in a given E.Coli strain.
 
+Below is the decription of the workflow:
+
 1. Created folder Data:
     Downloaded reference genome and annotation file;
     Downloaded Illumina sequences of a resistant strain;
 
 2. Manual inspection of sequencing files:
     Fasta files match the required format;
-    Word counts: 
+    Word counts via "wc -l" command:
 	1823504 amp_res_1.fastq
 	1823504 amp_res_2.fastq
     Number of reads = 455876 (number of lines divided by 4 lines per pead);
+
+3. Fastqc:
+    Fastqc installed manualy;
+    Got two reports in html format;
+    Number of reads is 455876, our previous calculations were right;
+    Red circles (abnormalities):
+	Per base sequence quality (both amp_res_1 and amp_res_2 files), very high variance in quality at ends of reads;
+	Per tile sequence quality (only amp_res_1 file);
