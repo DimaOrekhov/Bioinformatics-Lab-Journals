@@ -3,10 +3,12 @@ This project is aimed to identify genetic changes that led to antibiotic resista
 Below is the decription of the workflow:
 
 1. Created folder Data:
+
     Downloaded reference genome and annotation file;
     Downloaded Illumina sequences of a resistant strain;
 
 2. Manual inspection of sequencing files:
+
     Fasta files match the required format;
     Word counts via "wc -l" command:
 	1823504 amp_res_1.fastq
@@ -14,6 +16,7 @@ Below is the decription of the workflow:
     Number of reads = 455876 (number of lines divided by 4 lines per pead);
 
 3. Fastqc:
+
     Fastqc installed manualy;
     Got two reports in html format;
     Number of reads is 455876, our previous calculations were right;
@@ -25,6 +28,27 @@ Below is the decription of the workflow:
 	Non-significant spike at 6th base in N-content of reads in amp_res_1 file;
     Increased GC-content of the genome;
 
-4. Filtering the reads with Trimmomatic:
-    Choose Sanger-encoding "phred33";
+4. Trimming sequencing data with Trimmomatic:
 
+    Specified Sanger-encoding "-phred33";
+    The following parameters were specified:
+	LEADING:20
+	TRAILING:20
+	SLIDINGWINDOW:10:20
+	MINLEN:20
+    The full command that was executed can be found in the trimm_command.sh file.
+    Trimming results:
+	Both Surviving: 446259 (97.89%) 
+	Forward Only Surviving: 9216 (2.02%) 
+	Reverse Only Surviving: 273 (0.06%) 
+	Dropped: 128 (0.03%)
+    Reads count via shell command:
+	Number of reads in 1P and 2P files: 446259
+
+    Fastqc analysis of trimmed reads:
+	Red circle indicating abnormal per base sequence quality IS GONE;
+	Slightly abnormal sequence length distribution (peak at 101bp);
+	Long tail of the distribution of average per read quality is gone;
+
+    Fastqc on reads trimmed with "SLIDINGWINDOW:10:30":
+	Sequence length distribution have quite a long tail.
