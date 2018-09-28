@@ -2,6 +2,8 @@ This project is aimed to identify genetic changes that led to antibiotic resista
 
 Below is the decription of the workflow:
 
+25/09/18 18:20 
+
 1. Created folder Data:
 
     Downloaded reference genome and annotation file;
@@ -28,6 +30,8 @@ Below is the decription of the workflow:
 	Non-significant spike at 6th base in N-content of reads in amp_res_1 file;
     Increased GC-content of the genome;
 
+26/09/18 14:15
+
 4. Trimming sequencing data with Trimmomatic:
 
     Specified Sanger-encoding "-phred33";
@@ -36,7 +40,8 @@ Below is the decription of the workflow:
 	TRAILING:20
 	SLIDINGWINDOW:10:20
 	MINLEN:20
-    The full command that was executed can be found in the trimm_command.sh file.
+    Drop bases of the both ends of the read while their quality is below 20, slide with the window of the size 10 along the read and drop when the average quality is below 20, drop all the reads shorter than 20bp.
+    The full command that was executed can be found in the "trimm_command.sh" file.
     Trimming results:
 	Both Surviving: 446259 (97.89%) 
 	Forward Only Surviving: 9216 (2.02%) 
@@ -50,5 +55,25 @@ Below is the decription of the workflow:
 	Slightly abnormal sequence length distribution (peak at 101bp);
 	Long tail of the distribution of average per read quality is gone;
 
-    Fastqc on reads trimmed with "SLIDINGWINDOW:10:30":
+    Fastqc on reads trimmed with "SLIDINGWINDOW:10:30", full command in the file"trimm_command30.sh":
+	Results:
+		Both Surviving: 374108 (82.06%) 
+		Forward Only Surviving: 34651 (7.60%) 
+		Reverse Only Surviving: 25501 (5.59%) 
+		Dropped: 21616 (4.74%)
+	Only 82% of reads left;
 	Sequence length distribution have quite a long tail.
+	Considering the above reads obtained with "SLIDINGWINDOW:10:20" parameter will be used in futher analysis.
+
+27/09/18 13:10
+
+5. Alignment to a reference genome:
+
+    Indexed the reference genome with the following command: 
+	"bwa index GCA_000005845.2_ASM584v2_genomic.fna"
+
+    Allignment of trimmed reads with the command:
+	"bwa mem GCA_000005845.2_ASM584v2_genomic.fna Data/Trimmed/amp_trimmed_1P.fastq Data/Trimmed/amp_trimmed_2P.fastq > alligned.sam"
+
+    Result of the alignment process in "alligned.sam" file.
+
