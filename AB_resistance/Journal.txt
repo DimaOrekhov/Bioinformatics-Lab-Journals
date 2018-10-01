@@ -75,5 +75,27 @@ Below is the decription of the workflow:
     Allignment of trimmed reads with the command:
 	"bwa mem GCA_000005845.2_ASM584v2_genomic.fna Data/Trimmed/amp_trimmed_1P.fastq Data/Trimmed/amp_trimmed_2P.fastq > alligned.sam"
 
-    Result of the alignment process in "alligned.sam" file.
+    Result of the alignment process in "aligned.sam" file.
 
+30/09/18 20:10
+
+    Installed samtools from the official git-hub repo (version 1.9);
+    Conversion of .sam file to .bam (and compressed version):
+	"samtools view -S -b aligned.sam > aligned.bam"
+
+    Basic statistics via "samtools flagstat aligned.bam":
+	891649 reads mapped (99.87%)
+
+    Sorting and indexing .bam file:
+	"samtools sort aligned.bam -o aligned_sorted.bam"
+	"samtools index aligned_sorted.bam"
+
+6. Variant calling:
+	
+    Visualized Data in IGV;
+
+    Made a .mpileup file so it would be easier to distinguish between mutations and sequencing errors:
+	"samtools mpileup -f GCA_000005845.2_ASM584v2_genomic.fna aligned_sorted.bam > my.mpileup"
+
+    
+    
