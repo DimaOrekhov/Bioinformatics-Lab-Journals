@@ -1,4 +1,4 @@
-This project is aimed to identify genetic changes that led to antibiotic resistance in a given E.Coli strain.
+This project is aimed to identify genetic changes in a given antibiotic resistant E.Coli strain.
 
 Below is the decription of the workflow:
 
@@ -107,6 +107,6 @@ Below is the decription of the workflow:
     
     Inspection of the variants in IGV browser:
 	1 synonymous mutation;
-	4 missence mutation:
-	    3 in genes(ftsi, acrB, envZ)
-	    1 in non-coding region    
+	3 missence mutation:
+            Genes: ftsi, acrB, envZ;
+	1 in non-coding region    
