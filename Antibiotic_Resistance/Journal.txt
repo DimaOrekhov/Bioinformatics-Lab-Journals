@@ -1,0 +1,112 @@
+This project is aimed to identify genetic changes in a given antibiotic resistant E.Coli strain.
+
+Below is the decription of the workflow:
+
+25/09/18 18:20 
+
+1. Created folder Data:
+
+    Downloaded reference genome and annotation file;
+    Downloaded Illumina sequences of a resistant strain;
+
+2. Manual inspection of sequencing files:
+
+    Fasta files match the required format;
+    Word counts via "wc -l" command:
+	1823504 amp_res_1.fastq
+	1823504 amp_res_2.fastq
+    Number of reads = 455876 (number of lines divided by 4 lines per pead);
+
+3. Fastqc:
+
+    Fastqc installed manualy;
+    Got two reports in html format;
+    Number of reads is 455876, our previous calculations were right;
+    Red circles (abnormalities):
+	Per base sequence quality (both amp_res_1 and amp_res_2 files), very high variance in quality at ends of reads;
+	Per tile sequence quality (only amp_res_1 file);
+    Differences between amp_res_1 and amp_res_2 files:
+	Per tile sequence quality (abnormal in amp_res_1 and slightly abnormal in amp_res_2);
+	Non-significant spike at 6th base in N-content of reads in amp_res_1 file;
+    Increased GC-content of the genome;
+
+26/09/18 14:15
+
+4. Trimming sequencing data with Trimmomatic:
+
+    Specified Sanger-encoding "-phred33";
+    The following parameters were specified:
+	LEADING:20
+	TRAILING:20
+	SLIDINGWINDOW:10:20
+	MINLEN:20
+    Drop bases of the both ends of the read while their quality is below 20, slide with the window of the size 10 along the read and drop when the average quality is below 20, drop all the reads shorter than 20bp.
+    The full command that was executed can be found in the "trimm_command.sh" file.
+    Trimming results:
+	Both Surviving: 446259 (97.89%) 
+	Forward Only Surviving: 9216 (2.02%) 
+	Reverse Only Surviving: 273 (0.06%) 
+	Dropped: 128 (0.03%)
+    Reads count via shell command:
+	Number of reads in 1P and 2P files: 446259
+
+    Fastqc analysis of trimmed reads:
+	Red circle indicating abnormal per base sequence quality IS GONE;
+	Slightly abnormal sequence length distribution (peak at 101bp);
+	Long tail of the distribution of average per read quality is gone;
+
+    Fastqc on reads trimmed with "SLIDINGWINDOW:10:30", full command in the file"trimm_command30.sh":
+	Results:
+		Both Surviving: 374108 (82.06%) 
+		Forward Only Surviving: 34651 (7.60%) 
+		Reverse Only Surviving: 25501 (5.59%) 
+		Dropped: 21616 (4.74%)
+	Only 82% of reads left;
+	Sequence length distribution have quite a long tail.
+	Considering the above reads obtained with "SLIDINGWINDOW:10:20" parameter will be used in futher analysis.
+
+27/09/18 13:10
+
+5. Alignment to a reference genome:
+
+    Indexed the reference genome with the following command: 
+	"bwa index GCA_000005845.2_ASM584v2_genomic.fna"
+
+    Allignment of trimmed reads with the command:
+	"bwa mem GCA_000005845.2_ASM584v2_genomic.fna Data/Trimmed/amp_trimmed_1P.fastq Data/Trimmed/amp_trimmed_2P.fastq > alligned.sam"
+
+    Result of the alignment process in "aligned.sam" file.
+
+30/09/18 20:10
+
+    Installed samtools from the official git-hub repo (version 1.9);
+    Conversion of .sam file to .bam (and compressed version):
+	"samtools view -S -b aligned.sam > aligned.bam"
+
+    Basic statistics via "samtools flagstat aligned.bam":
+	891649 reads mapped (99.87%)
+
+    Sorting and indexing .bam file:
+	"samtools sort aligned.bam -o aligned_sorted.bam"
+	"samtools index aligned_sorted.bam"
+
+6. Variant calling:
+	
+    Visualized Data in IGV;
+
+    Made a .mpileup file so it would be easier to distinguish between mutations and sequencing errors:
+	"samtools mpileup -f GCA_000005845.2_ASM584v2_genomic.fna aligned_sorted.bam > my.mpileup"
+
+    
+01/10/2018 12:40
+
+    Variant calling with VarScan, --min-var-frequency threshold 0.8:
+	"java -jar ~/varscan/VarScan.v2.4.0.jar mpileup2snp my.mpileup --min-var-freq 0.80 --variants --output-vcf 1 > VarScan_res_8.vcf"
+
+    5 variant positions reported (5 SNP, 0 indel)
+    
+    Inspection of the variants in IGV browser:
+	1 synonymous mutation;
+	3 missence mutation:
+            Genes: ftsi, acrB, envZ;
+	1 in non-coding region    
