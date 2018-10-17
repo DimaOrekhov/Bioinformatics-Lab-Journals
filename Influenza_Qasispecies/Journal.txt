@@ -1,0 +1,161 @@
+09/10/2018 18:45
+
+Season 2018-19 influenza vaccine composition:
+
+    A/Michigan/45/2015 (H1N1)pdm09–like virus,
+    A/Singapore/INFIMH-16-0019/2016 (H3N2)–like virus;
+    B/Colorado/06/2017–like virus (Victoria lineage).
+    B/Phuket/3073/2013–like virus (Yamagata lineage) (Quadrivalent vaccine only)
+
+    Info taken from: https://www.cdc.gov/flu/professionals/acip/2018-2019/2018-19summary.htm
+
+----Downloading data----
+
+    Downloaded sequencing data from: ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR170/001/SRR1705851/SRR1705851.fastq.gz
+
+    Reference sequence for influenza hemagglutinin: http://public.dobzhanskycenter.ru/mrayko/Week2/KF848938.1.fasta
+
+----FastQC----
+
+    Sequencing data has Sanger-encoded quality scores.
+    Overall read-quality is good, no need for trimming.
+    Total sequences: 358265
+    Sequence length: 35-151, with an average around 145
+
+----Alignment----
+
+    Indexed the reference sequence with "bwa index"
+
+    Aligned sequencing data to the reference with the command:
+        bwa mem KF848938.1.fasta Data/SRR1705851.fastq | samtools view -S -b - | samtools sort - -o aligned_sorted.bam
+
+    Indexed aligned_sorted.bam;
+    Counted amount of reads mapped: 358032;
+
+    Choice of depth for mpileup command:
+    Sequences mapped = 358032
+    Average sequence length =147
+    Reference sequence length=1688
+
+----Making mpileup and vcf files----
+
+    Under the assumption that reads are evenly distributed, the average number of bases mapped to a reference base is:
+	358032*147/1665 ~ 31610.03
+
+    Clearly the value of parameter -d for samtools mpileup command should be greater than the obtained value;
+    Tried depth of 35000, 50000, 70000, 100000 and non-limited depth (which in fact is just a very large number);
+
+    Used VarScan version 2.4.0 to obtain .vcf files.
+
+    Scanning for rare mutations occuring with frequencies of at least 0.001, got 21 SNPs for file with non-limited depth, 21 SNPs aswell for 50000 depth. But 17 and 18 for 25000 and 35000 correspondingly;
+    Let's stick with 50000 depth.
+
+10/10/2018 14:10
+
+----Studying >0.95 frequency SNPs----
+
+    5 SNPs have been found:
+
+    KF848938.1 72 A G
+    KF848938.1 117 C T
+    KF848938.1 774 T C
+    KF848938.1 999 C T
+    KF848938.1 1260 A C
+
+    All of these mutations turned out to be synonymous.
+
+----Studying >0.001 frequency SNPs----
+
+    21 SNPs have been found, listed with their frequencies:
+
+    KF848938.1 72 A G    1/1:99.96%
+    KF848938.1 117 C T   1/1:99.82%
+    KF848938.1 254 A G   0/1:0.17%
+    KF848938.1 276 A G   0/1:0.17%
+    KF848938.1 307 C T   0/1:0.94%
+    KF848938.1 340 T C   0/1:0.17%
+    KF848938.1 389 T C   0/1:0.22%
+    KF848938.1 691 A G   0/1:0.17%
+    KF848938.1 722 A G   0/1:0.2%
+    KF848938.1 744 A G   0/1:0.17%
+    KF848938.1 774 T C   1/1:99.96%
+    KF848938.1 802 A G   0/1:0.23%
+    KF848938.1 859 A G   0/1:0.18%
+    KF848938.1 915 T C   0/1:0.19%
+    KF848938.1 999 C T   1/1:99.86%
+    KF848938.1 1043 A G  0/1:0.18%
+    KF848938.1 1086 A G  0/1:0.21%
+    KF848938.1 1213 A G  0/1:0.22%
+    KF848938.1 1260 A C  1/1:99.94%
+    KF848938.1 1280 T C  0/1:0.18%
+    KF848938.1 1458 T C  0/1:0.84%
+
+14/10/18 23:09
+
+----Using sequecing data of isogenic sample to determine error rate----
+
+    Sequencing data of three isogenic samples have been downloaded:
+
+    SRR1705858: ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR170/008/SRR1705858/SRR1705858.fastq.gz 
+    SRR1705859: ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR170/009/SRR1705859/SRR1705859.fastq.gz 
+    SRR1705860: ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR170/000/SRR1705860/SRR1705860.fastq.gz 
+
+    Read count:
+	SRR1705858: 256586
+	SRR1705859: 233327
+	SRR1705860: 249964
+
+    Aligned control samples with the following commands:
+	bwa mem KF848938.1.fasta Data/Control_sample/SRR1705858.fastq | /usr/bin/samtools-1.9/samtools view -S -b - | /usr/bin/samtools-1.9/samtools sort - -o control_5858.bam
+	bwa mem KF848938.1.fasta Data/Control_sample/SRR1705859.fastq | /usr/bin/samtools-1.9/samtools view -S -b - | /usr/bin/samtools-1.9/samtools sort - -o control_5859.bam
+	bwa mem KF848938.1.fasta Data/Control_sample/SRR1705860.fastq | /usr/bin/samtools-1.9/samtools view -S -b - | /usr/bin/samtools-1.9/samtools sort - -o control_5860.bam
+
+    Reads mapped:
+	SRR1705858: 256500
+        SRR1705859: 233251
+        SRR1705860: 249888
+
+    Average read length:
+	SRR1705858: 148
+	SRR1705859: 148
+	SRR1705860: 148
+
+    
+    Computing average depth:
+	SRR1705858: 256500*148/1665 = 22800
+        SRR1705859: 233251*148/1665 ~ 20733.42
+        SRR1705860: 249888*148/1665 ~ 22212.27 	
+
+    To be sure we get all the bases let's take 2 times the maximum average depth = 45600.
+
+    Made .mpileup files.
+    Used VarScan to discover variants with frequency of >0.001. 
+    Amount of SNPs found:
+	SRR1705858: 57 SNPs
+	SRR1705859: 52 SNPs
+	SRR1705860: 61 SNPs
+    
+    Locations, bases and frequencies of these mutations can be found in the separate spreadsheet file.
+    
+    Computed the average and standard deviation of the error frequencies in control sample, script is in the Basic_statistics_on_error_frequency.ipynb file.
+
+	                mean       std  mean+3std
+	SRR1705858  0.002565  0.000717  0.004717
+	SRR1705859  0.002369  0.000524  0.003941
+	SRR1705860  0.002503  0.000780  0.004844
+
+----Rare variants discovery in the original strain----
+
+    Returned to the list of >0.001 frequency variants of the original strain. Two mutations have been found with the frequency larger than the average error frequency plus its three standard deviations (maximum of the three control samples). 
+    No new mutations appear if we lover out threshold even to two standard deviations.
+	
+	KF848938.1   307  C  T  0.0094
+	KF848938.1  1458  T  C  0.0084
+
+    Aminoacid changes:
+	307 CCG to TTG: Proline to Serine; 103th amino acid
+	1458 TAT to TAC: Tyrosine to Tyrosine (Synonymous!); 486th amino acid
+
+----Epitope mapping----
+
+    Mutation at 307 bp (103th residue) is a part of an Epitiope D of HA protein.
