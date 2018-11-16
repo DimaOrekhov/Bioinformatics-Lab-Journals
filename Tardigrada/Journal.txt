@@ -1,0 +1,114 @@
+14/11/2018
+
+Downloaded data
+
+13:30
+
+----Repeat masking----
+
+    Ran RepeatMasker web version, specified "tardigrada" as a DNA source. Library contained 180 ancestral and ubiquitous sequences, 0 lineage speific. I'm not sure if this is a proper result.
+
+    Obtained the results for RepeatMasker using C. Elegans as a library. Results are pretty much the same.
+
+----Gene prediction----
+
+    Couldn't build a phylogenetic tree at the web site for free. Chose melanogaster as a reference in Augustus, because it is an arthropod, which is the closest clade to the tardigrada, and has a relatively long genome. I got only 200 sequences in the output .gff file, seemed too suspicious thus I've decided to use the .gff data we were given.
+
+----Getting protein sequences from annotation----
+
+    Downloaded Augustus output.
+    Ran perl script:
+        "chmod -x getAnnoFasta.pl"
+        "./getAnnoFasta.pl augustus.whole.gff"
+
+    Counted the number of proteins obtained via:
+        "grep '>' augustus.whole.aa | wc -l"
+
+    16435 proteins have been obtained
+
+16:45
+
+----Determining localization based on peptides data----
+    
+    Made a local blast database via:
+	"./makeblastdb -in ../../../Tardigrada/ScriptAltrun/augustus.whole.aa -dbtype prot -parse_seqids -out ../../../Tardigrada/P_MDB_pc/P_MDB_from_precomp"
+
+    Used blastp to align peptide.fa file:
+	"./blastp -query ../../../Tardigrada/peptides.fa -db ../../../Tardigrada/P_MDB_pc/P_MDB_from_precomp -outfmt '6 qseqid sseqid pident mismatch evalue bitscore qcovs qcovhsp' -out ../../../Tardigrada/BlastP_pc_qc"
+
+    Written a short python script in Jupyter notebook to get a list of proteins which either have 100% coverage and 85% identity with any of the peptides or 90%coverage and 100% identity. Got the list of 22 proteins.
+    Via the script in the same Jupyter notebook composed a fasta file that contains 22 proteins obtained earlier: "Pep_aligned_pc_qc".
+    The notebook can be found in the repository under the name "parse_BLAST_result.ipynb".
+
+18:15
+
+----WoLF PSORT----
+    
+    Uploaded the file containing 22 proteins, set "Animal" as an organism type.
+    Obtained the categories and counts, result is in the file "WoLF_pc.txt"
+    The largest count is used to classify a protein by its location.
+    	13 proteins calssified as Secretory;
+	1 as Mitochondrial;
+	1 as belonging to Endoplasmic Reticulum;
+	3 as Membrane;
+	4 as nuclear.
+
+----TargetP 1.1 Server----
+    
+    Obtained the report from TargetP 1.1 Server.
+    	14 proteins classified as Secretory;
+    	1 as Mitochondrial;
+	7 as belonging to other locations.
+    The full result is in the     
+
+----BLAST+ to UniProtKB/Swiss-Prot----
+    
+    Downloaded the database from: https://www.uniprot.org/downloads
+    Made a local database from a fasta file:
+	"./makeblastdb -in ../../Data_Bases/uniprot_sprot.fasta -dbtype prot -parse_seqids -out ../../Data_Bases/UniProtKB_Swiss/UniProtKB_Swiss"
+    Used blastp to align 20 proteins.
+	"./blastp -query ../../../Tardigrada/Pep_aligned_pc_qc.fa -db ../../Data_Bases/UniProtKB_Swiss/UniProtKB_Swiss -outfmt '6 qseqid sseqid pident evalue score bitscore qcovs' -out ../../../Tardigrada/BlastPepA_pcq6"
+
+    Obtained the top hits via Python script in the "parse_Blast_results.ipynb" notebook. Top hist was selected based on score, in cases of two proteins having identical value of score the one with smaller evalue was selected.
+
+    	query id	accession	% identity	evalue	% query coverage
+0	g702.t1		O45599		42.857		0.099		20
+1	g1285.t1	O45599		35		0.13		39
+2	g3428.t1	Q09510		56.604		9.49E-65	92
+3	g3679.t1	Q19269		29.717		8.05E-22	73
+4	g4106.t1	Q5XIN3		26.829		0.82		13
+5	g5237.t1	B8EA73		27.885		0.036		45
+6	g5443.t1	Q5UPK9		23.529		1.7		71
+7	g5467.t1	O45599		42.593		0.000886	37
+8	g5502.t1	O45599		38.889		0.001		22
+9	g5503.t1	O45599		37.037		0.005		25
+10	g5510.t1	Q6VBQ5		24.194		0.46		82
+11	g5616.t1	O45599		38.889		0.000437	27
+12	g5641.t1	O45599		40.741		0.004		28
+13	g10514.t1	B3LY22		30.435		1.6		30
+14	g12388.t1	P27878		30.357		0.56		33
+15	g12510.t1	P47393		32.558		4		16
+16	g12562.t1	O45599		38.636		0.038		22
+17	g14472.t1	P0DOW4		100		0		100
+18	g15153.t1	O45599		37.037		0.005		31
+19	g15484.t1	Q155U0		45.026		0		78
+
+    Other metrics are in the spreadsheet "Top_hits.xlsx", the annotation for the proteins can be found there as well.
+    Full result of the alignment containing all the hits is in the file BlastPepa_pcq6.
+    Note that of 22 proteins only 20 aligned.
+
+20:25
+
+----Pfam prediction----
+    
+    Used HMMER web-version to predict protein domains.
+    Selected hmmscan as a tool to use and Pfam database.
+    The proteins were classified as belonging to the following domains:
+	Domain				Proteins
+    	Chitin binding PA domain	9
+	Astacin				1
+	EF-hand domain pair		1
+	Membrane-associating domain	1
+	Vps51/Vps67			1
+	Unclassified			8
+    Full results are in the file hmmscan_res
