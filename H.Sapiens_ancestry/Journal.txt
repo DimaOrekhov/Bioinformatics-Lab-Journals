@@ -1,0 +1,33 @@
+28/11/2018 13:20
+
+----Downloaded data----
+    45 AMH mtDNA sequences
+    5 Neanderthales
+    3 Denisovans
+
+----AMH multiple alignment and tree building----
+
+    Used MAFFT to perform multiple alignment and build phylogenetic script.
+    A collection of .fasta files was made into a single file via Python scripy in the Compose_fastas.ipynb notebooks.
+    Used default parameters of MAFFT. Built NJ tree with 1000 bootsrap resamplings. 
+    
+    Downloaded tree as .xml file (Trees_xmls/NJ_HSapiens.xml)
+    Downloaded multiple alignment table in Clustal format (Clust_out/Human.txt).
+    
+    Wrote Python script to obtain pairwise distance matrix between sequences from Clustal tables (see Compose_fastas.ipynb). Quantity of mismatches and indels is the measure of distance.
+    Computed the average distance from every leaf to FJ713601 (Central African individual), which composes one of the two root subtrees: 88.22 mutations.
+    Computed the average sequence length: 16568.83 nucleotides.
+    Used the mtDNA mutation rate of 0.026 per site per million years.
+    Computed MRCA age with the following formula:
+	10**6*(mean_distance/2)/(avg_length*rate)=106491.79 years
+
+29/11/2018 18:40
+
+----Three human clades tree building----
+
+    Used MAFFT with the default parameters to build H.Sapiens tree. NJ tree with 1000 resamplings.
+    Downloaded tree as xml file(Trees_xmls/NJ_HND.xml).
+    Uploaded xml to ITOL to visualise the tree with the distances on edges. Computed mean distance between evry AMH leaf and MRCA of AMH: 0.0025.
+    This values is set into correspondence with 106491.79 years.
+    Neanderthales-AMH split: 0.0063 -> 268359.71
+    Denisovans split: 0.01145 -> 487732.4
