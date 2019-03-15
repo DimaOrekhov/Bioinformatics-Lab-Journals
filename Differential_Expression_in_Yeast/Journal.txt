@@ -1,0 +1,45 @@
+12/03/19 15:17
+
+Downloaded all the data:
+	4 file with sequencing data;
+	Reference genome;
+	Reference transcriptome;
+	Reference annotation;
+
+Downloaded HISAT2;
+Installed DESeq2 in R;
+
+Alignment with HISAT2:
+	Indexing:
+	/opt/hisat2-2.1.0/hisat2-build GCF_000146045.2_R64_genomic.fna GenomeIndex	
+	Alignment:
+	/opt/hisat2-2.1.0/hisat2 -p 4 -x GenomeIndex -U SRR941816.fastq | samtools sort > 16.bam
+	/opt/hisat2-2.1.0/hisat2 -p 4 -x GenomeIndex -U SRR941817.fastq | samtools sort > 17.bam
+	/opt/hisat2-2.1.0/hisat2 -p 4 -x GenomeIndex -U SRR941818.fastq | samtools sort > 18.bam
+	/opt/hisat2-2.1.0/hisat2 -p 4 -x GenomeIndex -U SRR941819.fastq | samtools sort > 19.bam
+
+Installed gffread:
+	conda install -c bioconda gffread 
+Converted .gff to .gtt:
+	gffread GCF_000146045.2_R64_genomic.gff -T -o genomic.gtt
+Installed subread package via conda;
+Ran featureCounts:
+	featureCounts -g gene_name -a *gtt -o sc_all.txt *bam
+Formatted the output of feature counts:
+	cat sc_all.txt | cut -f 1,7-10 > simple_counts.txt
+Changed the name of IMP2' gene to IMP2_1:
+	sed -i "s/'/_1/" simple_counts.txt
+
+14/03/19 20:00
+
+Downloaded R scripts for the analysis;
+Ran deseq2.r on all the data:
+	cat simple_counts.txt | R -f RScripts/deseq2.r
+Installed R 'gplots' package;
+Draw heatmap:
+	cat deseq_res/norm-matrix-deseq2.txt | R -f RScripts/draw-heatmap.r
+It is seen from the heatmap in output.pdf that expression differ in yeasts under different conditions;
+Got top 50 genes according to p-value;
+Obtained GO results. 
+Used pandas to determine whether a gene is down- or upregulated during fermenation based on the comparison with the base mean, scripts are present in Analyzing_results.ipynb.
+Computed how many genes are significant according to different p-val thresholds.
