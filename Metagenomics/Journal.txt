@@ -1,0 +1,36 @@
+03/04/19
+
+Downloaded data:
+   G12_V3_bone.fna
+   G12_V3_calculus.fna
+
+qiime installation failed.
+
+Downloaded qiime_out.zip.
+Installed biom to convert .biom table to .tsv.
+Analysed OTU table and taxonomy table in Python.
+Found Porphyromonas gingivalis and Tannerella forsythia.
+
+06/04/19
+
+Installed metaphlan2 into separate conda environment.
+Ran command: 
+	metaphlan2.py Data/G12_assembly.fna --input_type fasta --nproc 4 > out_assembly.txt
+Did the same with HMP data.
+Merged tables.
+Obtained heatmap.
+
+07/04/19
+
+Downloaded reference genome and annotation file to Data/ foled.
+Allignment:
+	/opt/bwa/bwa index Data/sequence.fasta
+	/opt/bwa/bwa mem Data/sequence.fasta Data/G12_assembly.fna > alignment.sam
+	samtools view -S -b alignment.sam > alignment.bam
+	samtools sort alignment.bam -o s_alignment.bam
+	samtools index s_alignment.bam
+
+Installing bedtools via apt-get package manager.
+Commands:
+	bedtools bamtobed -i s_alignment.bam > alignment.bed
+	bedtools intersect -v -a Data/sequence.gff3 -b alignment.bed > inersection.txt
